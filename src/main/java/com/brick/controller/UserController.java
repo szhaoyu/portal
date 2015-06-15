@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.brick.entities.User;
 import com.brick.entities.UserCreateForm;
 import com.brick.entities.validator.UserCreateFormValidator;
 import com.brick.service.UserService;
@@ -45,8 +46,9 @@ public class UserController {
     @RequestMapping("/user/{id}")
     public ModelAndView getUserPage(@PathVariable Long id) {
         log.debug("Getting user page for user={}", id);
-        return new ModelAndView("user", "user", userService.getUserById(id)
-                .orElseThrow(() -> new NoSuchElementException(String.format("User=%s not found", id))));
+        User user=userService.getUserById(id)
+        		.orElseThrow(() -> new NoSuchElementException(String.format("User=%s not found", id ) ) ); 
+        return new ModelAndView("user", "user", user );
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
