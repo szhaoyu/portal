@@ -2,6 +2,7 @@ package com.brick.controller;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LoginLogoutController {
 
 	@RequestMapping("")
+	//@PreAuthorize("hasAuthority('ADMIN')")
     public String index(){
         return "index";
     }
@@ -46,6 +48,6 @@ public class LoginLogoutController {
      */
     @RequestMapping(value= "/logout", method = RequestMethod.GET)
     public String getLogoutPage() {
-        return "redirect:/login";
+        return "redirect:/";
     }
 }

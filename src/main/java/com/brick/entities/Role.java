@@ -1,5 +1,5 @@
 package com.brick.entities;
 
 public enum Role {
-	USER, ADMIN
+	USER, ADMIN, INVESTOR, INITIATOR, MANAGER
 }

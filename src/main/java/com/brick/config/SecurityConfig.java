@@ -11,35 +11,48 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import com.brick.security.CookieAuthenticationFilter;
+import com.brick.security.CustomLogoutSuccessHandler;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+	//DAO模式
     @Autowired
     private UserDetailsService userDetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/", "/public/**").permitAll()
-                .antMatchers("/users/**").hasAuthority("ADMIN")
-                .anyRequest().fullyAuthenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .failureUrl("/login?error")
-                .usernameParameter("email")
-                .permitAll()
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .deleteCookies("remember-me")
-                .logoutSuccessUrl("/")
-                .permitAll()
-                .and()
-                .rememberMe();
+    	CookieAuthenticationFilter filterAuth = new CookieAuthenticationFilter();
+    	filterAuth.setAuthenticationManager(authenticationManager());
+    	filterAuth.setCheckForPrincipalChanges(true);
+    	filterAuth.setInvalidateSessionOnPrincipalChange(true);
+        http
+        	//.addFilter(filterAuth)
+        	.authorizeRequests()
+            .antMatchers("/public/**").permitAll()
+            .antMatchers("/users/**").hasAuthority("ADMIN")
+            .anyRequest().fullyAuthenticated()
+            .and()
+            .formLogin()
+            .loginPage("/login")
+            .failureUrl("/login?error")
+            .usernameParameter("email")
+            .permitAll()
+            .and()
+            .logout()
+            .logoutSuccessHandler(new CustomLogoutSuccessHandler())
+            //.logoutUrl("/logout")
+            .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+            .deleteCookies("remember-me")
+            //.logoutSuccessUrl("/")
+            .permitAll();
+            //.and()
+            //.rememberMe();
     }
     
     @Override
